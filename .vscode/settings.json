@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "stdlib.h": "c",
+        "time.h": "c"
+    },
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/arthur/Documentos/C/Adedonha",
+            "binaryPath": "/home/arthur/Documentos/C/Adedonha/jogo",
+            "binaryArgs": []
+        }
+    ]
+}

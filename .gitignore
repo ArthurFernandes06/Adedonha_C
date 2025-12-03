@@ -1,0 +1,6 @@
+#arquivo do editor
+./vscode
+
+#arquivos de compilação
+*.exe
+*.o
