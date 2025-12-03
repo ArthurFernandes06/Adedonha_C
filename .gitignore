@@ -1,6 +1,12 @@
-#arquivo do editor
-./vscode
+# Configurações do VSCode
+.vscode/
 
-#arquivos de compilação
-*.exe
+# Binários e arquivos compilados
 *.o
+*.out
+*.exe
+main
+
+# Temporários e logs
+*.log
+*.tmp
