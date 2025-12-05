@@ -22,6 +22,12 @@ void push_pilha(Pilha **p, char nome[])
 
 char *pop_pilha(Pilha **p)
 {
+    // Remove o elemento do topo da pilha e retorna uma cópia de sua string.
+    // Caso a pilha esteja vazia, retorna NULL.
+    // A função aloca memória para a string retornada; o chamador deve liberá-la.
+    // O nó removido da pilha é devidamente liberado.
+    // Mantém a pilha consistente ajustando o ponteiro para o próximo nó.
+
     if((*p) == NULL)
     {
         return NULL;

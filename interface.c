@@ -78,6 +78,7 @@ void sorteia_jogadores(Pilha **p, ListaJogadores jogadores[],int total_jogadores
 }
 char sorteia_letra(char letras[])
 {
+    //Sorteia uma letra das disponiveis no vetor letras e a remove do vetor.
     int tam_letras = strlen(letras);
     int pos = rand() % tam_letras;
     char saida = letras[pos];
@@ -120,64 +121,119 @@ int get_pontuacao(ListaJogadores jogadores[],int total_jogadores,int pos)
 }
 void get_respostas(ListaJogadores jogadores[],int total_jogadores, char letras[],Pilha **p,char *categoria)
 {
-    int pontuacao[total_jogadores];
+    // Executa uma rodada do jogo: sorteia letra, sorteia ordem dos jogadores e coleta respostas.
+    // Impõe um tempo máximo (8 + 2*N) por jogador, reduzindo 2s a cada atraso acumulado.
+    // Valida tamanho da resposta e se começa com a letra sorteada.
+    // Armazena as respostas e calcula a pontuação da rodada.
+    // Atualiza e exibe a pontuação total dos jogadores ao final.
+
+    int tempo_maximo = 8 + 2 * total_jogadores;
+    int pontuacao[total_jogadores][2]; // [pontos][pode_pontuar]
     char letra_sorteada = sorteia_letra(letras);
-    char buffer[128],nome_atual[16];
-    printf("\nA letra da rodada eh \'%c\'", letra_sorteada);
-    printf("\nA categoria da rodada eh: %s",categoria);
-    sorteia_jogadores(p,jogadores,total_jogadores);
-    for(int i =0; i < total_jogadores; ++i)
+    char buffer[128], nome_atual[16];
+
+    printf("\nA letra da rodada eh '%c'", letra_sorteada);
+    printf("\nA categoria da rodada eh: %s", categoria);
+
+    sorteia_jogadores(p, jogadores, total_jogadores);
+
+    printf("\nPressione ENTER para iniciar a próxima rodada...");
+    while(getchar() != '\n');
+
+    for (int i = 0; i < total_jogadores; ++i)
     {
-        
         char *temp = pop_pilha(p);
-        strcpy(nome_atual,temp);
+        strcpy(nome_atual, temp);
         free(temp);
-        int pos = buscar_por_nome(jogadores,total_jogadores,nome_atual);
+
+        int pos = buscar_por_nome(jogadores, total_jogadores, nome_atual);
+
         int size_buffer = 0;
-        
+        int saiu_por_tempo = 0;  // 0 = respondeu, 1 = estourou o tempo
+
+        time_t inicio = time(NULL);
+
         do
-        {   
-            
-            printf("\nDigite sua resposta %s: ", nome_atual);
-            if(strcmp("NOME DE PESSOA", categoria) == 0)
+        {
+            printf("\nDigite sua resposta %s (Tempo max: %d s): ", nome_atual, tempo_maximo);
+            fflush(stdout);
+
+            // Verifica se explodiu o tempo antes de tentar ler
+            if (time(NULL) - inicio >= tempo_maximo)
             {
-                scanf("%127s",buffer);
-                //Limpar as entradas no terminal
-                while(getchar() != '\n');
-            }else
+                saiu_por_tempo = 1;
+            }
+            else
             {
-                fgets(buffer, sizeof(buffer), stdin);
-                buffer[strcspn(buffer, "\n")] = '\0';
+    
+                if (strcmp("NOME DE PESSOA", categoria) == 0)
+                {
+                    scanf("%127s", buffer);
+                    while (getchar() != '\n');
+                }
+                else
+                {
+                    fgets(buffer, sizeof(buffer), stdin);
+                    buffer[strcspn(buffer, "\n")] = '\0';
+                }
             }
 
-            to_upper(buffer);
-            size_buffer = strlen(buffer);
-            if( size_buffer > 30 || size_buffer < 1)
+            if (!saiu_por_tempo)
             {
-                printf("\nTamanho de resposta invalido!!!");
+                to_upper(buffer);
+                size_buffer = strlen(buffer);
+
+                if (size_buffer > 30 || size_buffer < 1)
+                    printf("\nTamanho de resposta invalido!!!");
+
+                if (buffer[0] != letra_sorteada)
+                    printf("\nVoce digitou uma palavra que nao corresponde a letra sorteada.");
+
             }
-            if(buffer[0] != letra_sorteada)
-            {
-                printf("\nVoce digitou uma palavra que não corresponde a letra sorteada.");
-            }
-            
-        }while(size_buffer > 30 || size_buffer < 1 || buffer[0] != letra_sorteada);
-        strcpy(jogadores[pos].resposta,buffer);
-        
+
+        } while ((size_buffer > 30 || size_buffer < 1 || buffer[0] != letra_sorteada) && !saiu_por_tempo);
+
+        if (saiu_por_tempo)
+        {
+            printf("\n%s estourou o tempo!\n", nome_atual);
+            strcpy(jogadores[pos].resposta, "");
+            pontuacao[i][1] = 0;
+            tempo_maximo -= 2;
+            if (tempo_maximo < 1) tempo_maximo = 1;
+        }
+        else
+        {
+            strcpy(jogadores[pos].resposta, buffer);
+            pontuacao[i][1] = 1; 
+        }
     }
-    for(int i =0; i <total_jogadores; ++i)
+
+
+    for (int i = 0; i < total_jogadores; ++i)
     {
-        pontuacao[i] = get_pontuacao(jogadores,total_jogadores,i);
-        jogadores[i].pontuacao += pontuacao[i];
+        if (pontuacao[i][1] == 1)
+        {
+            pontuacao[i][0] = get_pontuacao(jogadores, total_jogadores, i);
+            jogadores[i].pontuacao += pontuacao[i][0];
+        }
+        else
+        {
+            pontuacao[i][0] = 0;
+        }
     }
-    printf("         Pontuacao da rodada | Pontuacao Total\n");
-    for(int i = 0; i < total_jogadores;++i)
+
+    printf("\n         Pontuacao da rodada | Pontuacao Total\n");
+    for (int i = 0; i < total_jogadores; ++i)
     {
-        printf("\n%s:       %d  |   %d",jogadores[i].nome, pontuacao[i], jogadores[i].pontuacao);
+        printf("\n%s:       %d  |   %d",
+               jogadores[i].nome,
+               pontuacao[i][0],
+               jogadores[i].pontuacao);
     }
 }
 void ordena_lista(ListaJogadores jogadores[], int total_jogadores)
 {
+    //Ordena o vetor de structs por ordem de pontuação.
     for(int i = 0; i < total_jogadores - 1; i++)
     {
         for(int j = 0; j < total_jogadores - i - 1; j++)

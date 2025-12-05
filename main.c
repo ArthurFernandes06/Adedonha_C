@@ -5,6 +5,7 @@
 
 int read_categorias(Pilha **p,char categorias[][32], int max)
 {
+    //Le um arquivo txt e adiciona as categorias de forma aleatoria na pilha.
     FILE *fin = fopen("categorias.txt","r");
     if(fin == NULL)
     {
