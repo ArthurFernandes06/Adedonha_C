@@ -1,0 +1,5 @@
+nome de pessoa
+nomes de cidade
+nomes de animais
+nomes de comida
+profissoes
