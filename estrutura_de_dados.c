@@ -1,3 +1,4 @@
+//Arthur Rodrigues Fernandes 580801
 #include "estrutura_de_dados.h"
 
 void push_pilha(Pilha **p, char nome[])

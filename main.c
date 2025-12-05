@@ -1,3 +1,4 @@
+//Arthur Rodrigues Fernandes 580801
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -47,7 +48,7 @@ int main()
 {
     srand(time(NULL));
     Pilha *p_jogadores = NULL;
-    Pilha *p_categorias;
+    Pilha *p_categorias = NULL;
     ListaJogadores jogadores[12];
     char letras[] = "ABCDEFGHIJLMNOPQRTUVXZ";
     int total_jogadores = leitura_jogadores(jogadores);

@@ -1,3 +1,4 @@
+//Arthur Rodrigues Fernandes 580801
 #include "interface.h"
 
 int leitura_jogadores(ListaJogadores jogadores[])
