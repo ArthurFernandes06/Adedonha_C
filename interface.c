@@ -2,6 +2,8 @@
 
 int leitura_jogadores(char *nomes[])
 {
+    // Faz a leitura dos jogadores e armazena em um vertor de ponteiros para char,
+    //onde cada ponteiro aponta para um nome.
     char buffer[128];
     int d;
     int n = 0;
@@ -46,4 +48,47 @@ int leitura_jogadores(char *nomes[])
         nomes[i] = NULL;
     }
     return n;
+}
+void sorteia_jogadores(Pilha **p, char *nomes[],int jogadores)
+{
+    /*
+        Uma função para adicionar os jogadores a uma pilha
+        em ordem aleatoria.
+
+        Entrada:
+            1) A pilha que os jogadores serão adicionados;
+            2) O vetor de ponteiros com os nomes;
+            3) O total de jogadores.
+    */
+    // cria vetor de índices
+    int indices[jogadores];
+    for (int i = 0; i < jogadores; i++)
+        indices[i] = i;
+
+    //Sorteia os indicies
+    for (int i = jogadores - 1; i > 0; i--)
+    {
+        int j = rand() % (i + 1);
+
+        int aux = indices[i];
+        indices[i] = indices[j];
+        indices[j] = aux;
+    }
+
+    for(int i =0; i<jogadores; ++i)
+    {
+        push_pilha(p,nomes[indices[i]]);
+    }
+
+}
+char sorteia_letra(char letras[])
+{
+    int tam_letras = strlen(letras);
+    int pos = rand() % tam_letras;
+    char saida = letras[pos];
+    
+    letras[pos] = letras[tam_letras - 1];
+    letras[tam_letras - 1] = '\0';
+    
+    return saida;
 }
